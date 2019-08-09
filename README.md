@@ -30,7 +30,7 @@ services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.
 ```
 
 ## Integration
-1. Get request model `/EPAY/EPAYRequest.cs`
+1. Get request model `/EPAY/EPAYRequest.cs`:
 ```
 public class EPAYRequest
 {
@@ -65,7 +65,7 @@ public class EPAYRequest
     public string HashCode { get; set; }
 }
 ```
-2. Razor Page Implementation `/Pages/EPAY/Index.cshtml.cs`
+2. Razor Page Implementation `/Pages/EPAY/Index.cshtml.cs`:
 ```
 [BindProperties(SupportsGet = true)]
 public class IndexModel : PageModel
@@ -85,7 +85,7 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
-        // NOTE: Some validations are missing, you can implement them on your own. (e.g ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc)
+        // NOTE: Some validations are missing, you can implement them on your own. (e.g. ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc.)
 
         if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfiguration, out string responseContent))
         {
