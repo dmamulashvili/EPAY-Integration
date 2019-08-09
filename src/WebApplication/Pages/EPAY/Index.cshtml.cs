@@ -14,14 +14,14 @@ namespace WebApplication.Pages.EPAY
     [BindProperties(SupportsGet = true)]
     public class IndexModel : PageModel
     {
-        private readonly EPAYConfiguration _config;
+        private readonly EPAYConfiguration _epayConfiguration;
         private readonly ApplicationDbContext _context;
 
         public IndexModel(IOptions<EPAYConfiguration> options
             //, ApplicationDbContext context
             )
         {
-            _config = options.Value;
+            _epayConfiguration = options.Value;
             //_context = context;
         }
 
@@ -31,7 +31,7 @@ namespace WebApplication.Pages.EPAY
         {
             // NOTE: Some validations are missing, you can implement them on your own. (e.g ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc)
 
-            if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _config, out string responseContent))
+            if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfiguration, out string responseContent))
             {
                 return Content(responseContent);
             }
