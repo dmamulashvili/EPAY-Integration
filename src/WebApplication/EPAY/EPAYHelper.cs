@@ -11,38 +11,49 @@ namespace WebApplication.EPAY
 {
     public static class EPAYHelper
     {
-        public static bool IsValidEPAYRequest(this HttpRequest httpRequest, EPAYRequest epayRequest, EPAYConfiguration config, out string responseContent)
+        public static bool IsValidEPAYRequest(HttpRequest httpRequest, EPAYRequest epayRequest, EPAYConfiguration epayConfig, out string responseContent)
         {
             responseContent = string.Empty;
+
+            if (epayRequest.Username != epayConfig.Username && epayRequest.Password != epayConfig.Password)
+            {
+                responseContent = BuildResponseContent(ResponseStatusCode.InvalidUsernamePassword);
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(epayRequest.ServiceId) && epayRequest.ServiceId != epayConfig.ServiceId)
+            {
+                responseContent = BuildResponseContent(ResponseStatusCode.InvalidServiceId);
+                return false;
+            }
 
             using (MD5 md5Hash = MD5.Create())
             {
                 var queryValues = httpRequest.Query.Where(q => q.Key != "HASH_CODE").Select(s => s.Value.ToString()).ToList();
 
-                string hashOfInput = GetMd5Hash(md5Hash, string.Join(string.Empty, queryValues) + config.SecretKey);
+                string hashOfInput = GetMd5Hash(md5Hash, string.Join(string.Empty, queryValues) + epayConfig.SecretKey);
 
-                var result = VerifyMd5Hash(md5Hash, hashOfInput, epayRequest.HashCode);
-
-                if (!result)
+                if (!VerifyMd5Hash(md5Hash, hashOfInput, epayRequest.HashCode))
                 {
-                    responseContent = BuildREsponse(ResponseStatusCode.InvalidHashCode).ToString();
+                    responseContent = BuildResponseContent(ResponseStatusCode.InvalidHashCode);
+                    return false;
                 }
-
-                return result;
             }
+
+            return true;
         }
 
-        public static XElement BuildREsponse(ResponseStatusCode statusCode, int? customerBalance = null, string customerFirstName = null, string custmerLastName = null, int? paymentId = null)
+        public static string BuildResponseContent(ResponseStatusCode statusCode, int? debt = null, string firstName = null, string lastName = null, int? receiptId = null)
         {
             if (statusCode == ResponseStatusCode.OK)
             {
-                var receiptIdXElement = paymentId.HasValue ? new XElement("receipt-id", paymentId.Value) : null;
-                var debtXElement = customerBalance.HasValue ? new XElement("debt", customerBalance.Value) : null;
+                var receiptIdXElement = receiptId.HasValue ? new XElement("receipt-id", receiptId.Value) : null;
+                var debtXElement = debt.HasValue ? new XElement("debt", debt.Value) : null;
 
-                var additionalInfoXElement = !string.IsNullOrWhiteSpace(customerFirstName) && !string.IsNullOrWhiteSpace(custmerLastName) ?
+                var additionalInfoXElement = !string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName) ?
                     new XElement("additional-info",
-                        new XElement("parameter", new XAttribute("name", "first_name"), customerFirstName),
-                        new XElement("parameter", new XAttribute("name", "last_name"), custmerLastName)
+                        new XElement("parameter", new XAttribute("name", "first_name"), firstName),
+                        new XElement("parameter", new XAttribute("name", "last_name"), lastName)
                     ) : null;
 
                 var result =
@@ -56,7 +67,7 @@ namespace WebApplication.EPAY
                         additionalInfoXElement
                     );
 
-                return result;
+                return result.ToString();
             }
             else
             {
@@ -69,8 +80,18 @@ namespace WebApplication.EPAY
                         new XElement("timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds())
                     );
 
-                return result;
+                return result.ToString();
             }
+        }
+
+        public static int ConvertGELToEPAYAmount(decimal input)
+        {
+            return Convert.ToInt32(input * 100);
+        }
+
+        public static decimal ConvertEPAYAmountToGEL(int input)
+        {
+            return Convert.ToDecimal(input) / 100;
         }
 
         static bool VerifyMd5Hash(MD5 md5Hash, string hashOfInput, string hash)

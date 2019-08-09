@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using WebApplication.Data;
 using WebApplication.EPAY;
 
 namespace WebApplication.Pages.EPAY
@@ -13,22 +15,82 @@ namespace WebApplication.Pages.EPAY
     public class IndexModel : PageModel
     {
         private readonly EPAYConfiguration _config;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(IOptions<EPAYConfiguration> options)
+        public IndexModel(IOptions<EPAYConfiguration> options
+            //, ApplicationDbContext context
+            )
         {
             _config = options.Value;
+            //_context = context;
         }
 
         public EPAYRequest EPAYRequest { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-            if(!HttpContext.Request.IsValidEPAYRequest(EPAYRequest, _config, out string responseContent))
+            // NOTE: Some validations are missing, you can implement them on your own. (e.g ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc)
+
+            if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _config, out string responseContent))
             {
                 return Content(responseContent);
             }
 
-            return Content(string.Empty);
+            if (!Enum.TryParse(value: EPAYRequest.OperationType, ignoreCase: true, result: out OperationType operationType))
+            {
+                throw new NotSupportedException(EPAYRequest.OperationType.ToString());
+            }
+
+            if (operationType == OperationType.PING || operationType == OperationType.VERIFY)
+            {
+                return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.OK));
+            }
+
+            // EPAYRequest.CustomerId is Customer Mobile or Email
+            Customer customer;
+
+            // IF CustomerId is Mobile
+            customer = await _context.Customers.FirstOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId);
+
+            // IF CustomerId is Email
+            customer = await _context.Customers.FirstOrDefaultAsync(s => s.Email.Equals(EPAYRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+
+            if (customer == null)
+            {
+                return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.CustomerNotFound));
+            }
+
+            if (operationType == OperationType.DEBT)
+            {
+                return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.OK, EPAYHelper.ConvertGELToEPAYAmount(customer.Balance), customer.FirstName, customer.LastName));
+            }
+
+            if (operationType == OperationType.PAY)
+            {
+                var duplicatePayment = await _context.Payments.FirstOrDefaultAsync(s => s.ExternalId == EPAYRequest.PaymentId);
+                if(duplicatePayment != null)
+                {
+                    return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.InvalidPaymentIdNonUnique));
+                }
+
+                var payment = new Payment
+                {
+                    ExternalId = EPAYRequest.PaymentId,
+                    ExternalAadditionalInformation = EPAYRequest.ExtraInfo,
+                    Amount = EPAYHelper.ConvertEPAYAmountToGEL(EPAYRequest.PayAmount),
+                    CustomerId = customer.Id
+                };
+                await _context.Payments.AddAsync(payment);
+
+                customer.Balance += payment.Amount;
+                _context.Customers.Update(customer);
+
+                await _context.SaveChangesAsync();
+
+                return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.OK, receiptId: payment.Id));
+            }
+
+            return BadRequest();
         }
     }
 }
