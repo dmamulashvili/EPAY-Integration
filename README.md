@@ -97,23 +97,22 @@ public class IndexModel : PageModel
             throw new NotSupportedException(EPAYRequest.OperationType.ToString());
         }
 
-        if (operationType == OperationType.PING || operationType == OperationType.VERIFY)
+        if (operationType == OperationType.PING)
         {
             return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.OK));
         }
 
         // EPAYRequest.CustomerId is Customer Mobile or Email
-        Customer customer;
-
-        // IF CustomerId is Mobile
-        customer = await _context.Customers.FirstOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId);
-
-        // IF CustomerId is Email
-        customer = await _context.Customers.FirstOrDefaultAsync(s => s.Email.Equals(EPAYRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId || s.Email.Equals(EPAYRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
 
         if (customer == null)
         {
             return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.CustomerNotFound));
+        }
+
+        if (operationType == OperationType.VERIFY)
+        {
+            return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.OK));
         }
 
         if (operationType == OperationType.DEBT)
@@ -123,7 +122,7 @@ public class IndexModel : PageModel
 
         if (operationType == OperationType.PAY)
         {
-            var duplicatePayment = await _context.Payments.FirstOrDefaultAsync(s => s.ExternalId == EPAYRequest.PaymentId);
+            var duplicatePayment = await _context.Payments.SingleOrDefaultAsync(s => s.ExternalId == EPAYRequest.PaymentId);
             if(duplicatePayment != null)
             {
                 return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.InvalidPaymentIdNonUnique));
