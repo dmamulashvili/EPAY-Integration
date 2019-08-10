@@ -37,7 +37,7 @@ services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.
 public class EPAYRequest
 {
     [BindProperty(Name = "OP")]
-    public string OperationType { get; set; }
+    public string OP { get; set; }
 
     [BindProperty(Name = "USERNAME")]
     public string Username { get; set; }
@@ -94,9 +94,9 @@ public class IndexModel : PageModel
             return Content(responseContent);
         }
 
-        if (!Enum.TryParse(EPAYRequest.OperationType, true, out OperationType operationType))
+        if (!Enum.TryParse(EPAYRequest.OP, true, out OperationType operationType))
         {
-            throw new NotSupportedException(EPAYRequest.OperationType.ToString());
+            throw new NotSupportedException(EPAYRequest.OP.ToString());
         }
 
         if (operationType == OperationType.PING)
