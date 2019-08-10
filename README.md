@@ -70,14 +70,14 @@ public class EPAYRequest
 [BindProperties(SupportsGet = true)]
 public class IndexModel : PageModel
 {
-    private readonly EPAYConfiguration _epayConfiguration;
+    private readonly EPAYConfiguration _epayConfig;
     private readonly ApplicationDbContext _context;
 
     public IndexModel(IOptions<EPAYConfiguration> options
         //, ApplicationDbContext context
         )
     {
-        _epayConfiguration = options.Value;
+        _epayConfig = options.Value;
         //_context = context;
     }
 
@@ -87,7 +87,7 @@ public class IndexModel : PageModel
     {
         // NOTE: Some validations are missing, you can implement them on your own. (e.g. ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc.)
 
-        if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfiguration, out string responseContent))
+        if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfig, out string responseContent))
         {
             return Content(responseContent);
         }
