@@ -32,7 +32,7 @@ services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.
 ```
 
 ## Integration
-1. Get request model `/EPAY/EPAYRequest.cs`:
+1. HTTP GET Request model `/EPAY/EPAYRequest.cs`:
 ```
 public class EPAYRequest
 {
