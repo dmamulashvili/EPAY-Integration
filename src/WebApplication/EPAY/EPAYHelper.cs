@@ -43,9 +43,9 @@ namespace WebApplication.EPAY
             return true;
         }
 
-        public static string BuildResponseContent(ResponseStatusCode statusCode, int? debt = null, string firstName = null, string lastName = null, int? receiptId = null)
+        public static string BuildResponseContent(ResponseStatusCode responseStatusCode, int? debt = null, string firstName = null, string lastName = null, int? receiptId = null)
         {
-            if (statusCode == ResponseStatusCode.OK)
+            if (responseStatusCode == ResponseStatusCode.OK)
             {
                 var receiptIdXElement = receiptId.HasValue ? new XElement("receipt-id", receiptId.Value) : null;
                 var debtXElement = debt.HasValue ? new XElement("debt", debt.Value) : null;
@@ -59,8 +59,8 @@ namespace WebApplication.EPAY
                 var result =
                     new XElement("pay-response",
                         new XElement("status",
-                            new XAttribute("code", (int)statusCode),
-                            statusCode.ToString()),
+                            new XAttribute("code", (int)responseStatusCode),
+                            responseStatusCode.ToString()),
                         new XElement("timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds()),
                         receiptIdXElement,
                         debtXElement,
@@ -74,9 +74,9 @@ namespace WebApplication.EPAY
                 var result =
                     new XElement("pay-response",
                         new XElement("status",
-                            new XAttribute("code", (int)statusCode),
+                            new XAttribute("code", (int)responseStatusCode),
                             new XAttribute("retry", false),
-                            statusCode.ToString()),
+                            responseStatusCode.ToString()),
                         new XElement("timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds())
                     );
 
