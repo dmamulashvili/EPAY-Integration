@@ -94,7 +94,7 @@ public class IndexModel : PageModel
             return Content(responseContent);
         }
 
-        if (!Enum.TryParse(value: EPAYRequest.OperationType, ignoreCase: true, result: out OperationType operationType))
+        if (!Enum.TryParse(EPAYRequest.OperationType, true, out OperationType operationType))
         {
             throw new NotSupportedException(EPAYRequest.OperationType.ToString());
         }
