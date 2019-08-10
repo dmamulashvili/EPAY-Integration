@@ -9,7 +9,7 @@ namespace WebApplication.EPAY
     public class EPAYRequest
     {
         [BindProperty(Name = "OP")]
-        public string OperationType { get; set; }
+        public string OP { get; set; }
 
         [BindProperty(Name = "USERNAME")]
         public string Username { get; set; }

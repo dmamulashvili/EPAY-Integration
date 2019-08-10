@@ -36,9 +36,9 @@ namespace WebApplication.Pages.EPAY
                 return Content(responseContent);
             }
 
-            if (!Enum.TryParse(EPAYRequest.OperationType, true, out OperationType operationType))
+            if (!Enum.TryParse(EPAYRequest.OP, true, out OperationType operationType))
             {
-                throw new NotSupportedException(EPAYRequest.OperationType.ToString());
+                throw new NotSupportedException(EPAYRequest.OP.ToString());
             }
 
             if (operationType == OperationType.PING)
