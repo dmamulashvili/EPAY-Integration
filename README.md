@@ -1,5 +1,7 @@
 # EPAY-Integration
-Simple EPAY Integration sample with ASP.NET Core Razor Pages
+Simple EPAY Integration with ASP.NET Core Razor Pages
+
+![alt text](https://www.lucidchart.com/publicSegments/view/892fe3ec-1c40-46c7-a367-acfe11d2da3b/image.png)
 
 ## Configuration
 1. Configuration model `/EPAY/EPAYConfiguration.cs`:
@@ -30,7 +32,7 @@ services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.
 ```
 
 ## Integration
-1. Get request model `/EPAY/EPAYRequest.cs`:
+1. HTTP GET Request model `/EPAY/EPAYRequest.cs`:
 ```
 public class EPAYRequest
 {
@@ -70,14 +72,14 @@ public class EPAYRequest
 [BindProperties(SupportsGet = true)]
 public class IndexModel : PageModel
 {
-    private readonly EPAYConfiguration _epayConfiguration;
+    private readonly EPAYConfiguration _epayConfig;
     private readonly ApplicationDbContext _context;
 
     public IndexModel(IOptions<EPAYConfiguration> options
         //, ApplicationDbContext context
         )
     {
-        _epayConfiguration = options.Value;
+        _epayConfig = options.Value;
         //_context = context;
     }
 
@@ -87,7 +89,7 @@ public class IndexModel : PageModel
     {
         // NOTE: Some validations are missing, you can implement them on your own. (e.g. ResponseStatusCode.QueryParameterMissing, ResponseStatusCode.QueryParameterValueInvalid, etc.)
 
-        if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfiguration, out string responseContent))
+        if (!EPAYHelper.IsValidEPAYRequest(HttpContext.Request, EPAYRequest, _epayConfig, out string responseContent))
         {
             return Content(responseContent);
         }
