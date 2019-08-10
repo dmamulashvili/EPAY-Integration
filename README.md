@@ -122,7 +122,7 @@ public class IndexModel : PageModel
 
         if (operationType == OperationType.PAY)
         {
-            var duplicatePayment = await _context.Payments.FirstOrDefaultAsync(s => s.ExternalId == EPAYRequest.PaymentId);
+            var duplicatePayment = await _context.Payments.SingleOrDefaultAsync(s => s.ExternalId == EPAYRequest.PaymentId);
             if(duplicatePayment != null)
             {
                 return Content(EPAYHelper.BuildResponseContent(ResponseStatusCode.InvalidPaymentIdNonUnique));
