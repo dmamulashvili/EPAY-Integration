@@ -1,6 +1,8 @@
 # EPAY-Integration
 Simple EPAY Integration with ASP.NET Core Razor Pages
 
+![alt text](https://www.lucidchart.com/publicSegments/view/892fe3ec-1c40-46c7-a367-acfe11d2da3b/image.png)
+
 ## Configuration
 1. Configuration model `/EPAY/EPAYConfiguration.cs`:
 ```
