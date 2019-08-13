@@ -1,10 +1,10 @@
 # EPAY-Integration
-Simple EPAY Integration with ASP.NET Core Razor Pages
+Simple EPAY Integration with WebAPI, ASP.NET Core Razor Pages
 
 ![alt text](https://www.lucidchart.com/publicSegments/view/892fe3ec-1c40-46c7-a367-acfe11d2da3b/image.png)
 
 ## Configuration
-1. Configuration model `/EPAY/EPAYConfiguration.cs`:
+1. Configuration model `EPAY.EPAYConfiguration.cs`:
 ```
 public class EPAYConfiguration
 {
@@ -28,7 +28,7 @@ public class EPAYConfiguration
 ```
 3. Registered configuration in `Startup.cs`'s `ConfigureServices` method:
 ```
-services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.EPAYConfiguration)));
+services.Configure<EPAYConfiguration>(Configuration.GetSection(nameof(EPAYConfiguration)));
 ```
 
 ## Integration
