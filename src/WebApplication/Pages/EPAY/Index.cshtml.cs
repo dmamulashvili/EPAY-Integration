@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using WebApplication.Data;
-using WebApplication.EPAY;
+using EPAY;
 
 namespace WebApplication.Pages.EPAY
 {

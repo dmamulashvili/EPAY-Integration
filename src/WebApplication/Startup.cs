@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPAY;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +32,7 @@ namespace WebApplication
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<EPAY.EPAYConfiguration>(Configuration.GetSection(nameof(EPAY.EPAYConfiguration)));
+            services.Configure<EPAYConfiguration>(Configuration.GetSection(nameof(EPAYConfiguration)));
                 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
