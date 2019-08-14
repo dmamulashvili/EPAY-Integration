@@ -105,7 +105,7 @@ public class EPAYController : ControllerBase
         }
 
         // EPAYRequest.CUSTOMER_ID is Customer Mobile or Email
-        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.Equals(epayRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.ToUpper() == epayRequest.CustomerId.ToUpper());
 
         if (customer == null)
         {
@@ -189,7 +189,7 @@ public class IndexModel : PageModel
         }
 
         // EPAYRequest.CustomerId is Customer Mobile or Email
-        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId || s.Email.Equals(EPAYRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId || s.Email.ToUpper() == EPAYRequest.CustomerId.ToUpper());
 
         if (customer == null)
         {
