@@ -1,5 +1,5 @@
 # EPAY-Integration
-Simple EPAY Integration with WebAPI, ASP.NET Core Razor Pages
+Simple EPAY Integration with ASP.NET Core WebAPI, Razor Pages
 
 ![alt text](https://www.lucidchart.com/publicSegments/view/892fe3ec-1c40-46c7-a367-acfe11d2da3b/image.png)
 
