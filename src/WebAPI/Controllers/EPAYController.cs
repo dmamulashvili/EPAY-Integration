@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
             }
 
             // EPAYRequest.CUSTOMER_ID is Customer Mobile or Email
-            var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.Equals(epayRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+            var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.ToUpper() == epayRequest.CustomerId.ToUpper());
 
             if (customer == null)
             {
