@@ -140,7 +140,6 @@ public class EPAYController : ControllerBase
             await _context.Payments.AddAsync(payment);
 
             customer.Balance += payment.Amount;
-            _context.Customers.Update(customer);
 
             await _context.SaveChangesAsync();
 
