@@ -1,5 +1,5 @@
 # EPAY-Integration
-Simple EPAY Integration with WebAPI, ASP.NET Core Razor Pages
+Simple EPAY Integration with ASP.NET Core WebAPI, Razor Pages
 
 ![alt text](https://www.lucidchart.com/publicSegments/view/892fe3ec-1c40-46c7-a367-acfe11d2da3b/image.png)
 
@@ -105,7 +105,7 @@ public class EPAYController : ControllerBase
         }
 
         // EPAYRequest.CUSTOMER_ID is Customer Mobile or Email
-        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.Equals(epayRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == epayRequest.CustomerId || s.Email.ToUpper() == epayRequest.CustomerId.ToUpper());
 
         if (customer == null)
         {
@@ -140,7 +140,6 @@ public class EPAYController : ControllerBase
             await _context.Payments.AddAsync(payment);
 
             customer.Balance += payment.Amount;
-            _context.Customers.Update(customer);
 
             await _context.SaveChangesAsync();
 
@@ -189,7 +188,7 @@ public class IndexModel : PageModel
         }
 
         // EPAYRequest.CustomerId is Customer Mobile or Email
-        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId || s.Email.Equals(EPAYRequest.CustomerId, StringComparison.OrdinalIgnoreCase));
+        var customer = await _context.Customers.SingleOrDefaultAsync(s => s.Mobile == EPAYRequest.CustomerId || s.Email.ToUpper() == EPAYRequest.CustomerId.ToUpper());
 
         if (customer == null)
         {
@@ -224,7 +223,6 @@ public class IndexModel : PageModel
             await _context.Payments.AddAsync(payment);
 
             customer.Balance += payment.Amount;
-            _context.Customers.Update(customer);
 
             await _context.SaveChangesAsync();
 
