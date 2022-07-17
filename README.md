@@ -5,7 +5,7 @@ Simple EPAY Integration with ASP.NET Core WebAPI, Razor Pages
 
 ## Configuration
 1. Configuration model `EPAY.EPAYConfiguration.cs`:
-```
+```cs
 public class EPAYConfiguration
 {
     public string Username { get; set; }
@@ -18,7 +18,7 @@ public class EPAYConfiguration
 }
 ```
 2. Configuration sub-section in `appsettings.json`:
-```
+```json
 "EPAYConfiguration": {
   "Username": "",
   "Password": "",
@@ -27,13 +27,13 @@ public class EPAYConfiguration
 }
 ```
 3. Registered configuration in `Startup.cs`'s `ConfigureServices` method:
-```
+```cs
 services.Configure<EPAYConfiguration>(Configuration.GetSection(nameof(EPAYConfiguration)));
 ```
 
 ## Integration
 1. HTTP GET Request model `EPAY.EPAYRequest.cs`:
-```
+```cs
 public class EPAYRequest
 {
     [BindProperty(Name = "OP")]
@@ -68,7 +68,7 @@ public class EPAYRequest
 }
 ```
 2. WebAPI Implementation
-```
+```cs
 [Route("api/[controller]")]
 [ApiController]
 public class EPAYController : ControllerBase
@@ -151,7 +151,7 @@ public class EPAYController : ControllerBase
 }
 ```
 3. Razor Page Implementation `/Pages/EPAY/Index.cshtml.cs`:
-```
+```cs
 [BindProperties(SupportsGet = true)]
 public class IndexModel : PageModel
 {
